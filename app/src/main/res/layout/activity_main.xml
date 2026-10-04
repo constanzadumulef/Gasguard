@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:background="#F0F2F5"
+    android:padding="24dp">
+
+    <!-- Tarjeta del formulario de login -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:elevation="4dp"
+        android:orientation="vertical"
+        android:padding="28dp"
+        android:gravity="center">
+
+        <!-- Icono superior (Escudo con check en color celeste) -->
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginBottom="16dp"
+            android:src="@drawable/baseline_shield_24"
+            android:tint="#3483FA" />
+
+        <!-- Título de mi app-->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GasGuard"
+            android:textColor="#1F2937"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <!-- Subtítulo -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="Seguridad en el Hogar"
+            android:textColor="#6B7280"
+            android:textSize="14sp" />
+
+        <!-- Campo RUT -->
+        <EditText
+            android:id="@+id/etRut"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="16dp"
+            android:background="@android:drawable/editbox_background_normal"
+            android:hint="RUT (ej: 11111111-1)"
+            android:inputType="text"
+            android:paddingHorizontal="12dp"
+            android:textColor="#374151"
+            android:textColorHint="#9CA3AF"
+            android:textSize="14sp" />
+
+        <!-- Campo Contraseña -->
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="24dp"
+            android:background="@android:drawable/editbox_background_normal"
+            android:hint="Contraseña"
+            android:inputType="textPassword"
+            android:paddingHorizontal="12dp"
+            android:textColor="#374151"
+            android:textColorHint="#9CA3AF"
+            android:textSize="14sp" />
+
+        <!-- Botón de Acceso -->
+        <Button
+            android:id="@+id/btnAcceder"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:backgroundTint="#3483FA"
+            android:text="ACCEDER A LA SEGURIDAD"
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</LinearLayout>
