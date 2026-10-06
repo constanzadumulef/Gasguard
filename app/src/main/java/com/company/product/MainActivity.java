@@ -2,6 +2,7 @@ package com.company.product;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     // Dirección del servidor Apache en la Raspberry
     private static final String IP_SERVIDOR = "192.168.137.50";
 
+    private static final String TAG = "GasGuardLogin";
+
     private static final String COLOR_OK = "#16A34A";
     private static final String COLOR_ERROR = "#DC2626";
     private static final String COLOR_INFO = "#6B7280";
@@ -34,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Indicador para no resutilizar datos
+        System.setProperty("http.keepAlive", "false");
 
         final EditText etRut = findViewById(R.id.etRut);
         final EditText etPassword = findViewById(R.id.etPassword);
@@ -58,30 +64,12 @@ public class MainActivity extends AppCompatActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        final String respuesta = llamarLogin(rut, password);
+                        final String respuesta = consultarServidor(rut, password);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 btnAcceder.setEnabled(true);
-
-                                if (respuesta.startsWith("ERROR")) {
-                                    mostrarMensaje("RUT o clave incorrecta, intente nuevamente", COLOR_ERROR);
-                                    return;
-                                }
-
-                                try {
-                                    // Parseamos la respuesta JSON que viene del PHP
-                                    JSONObject jsonResponse = new JSONObject(respuesta);
-                                    boolean ok = jsonResponse.getBoolean("ok");
-
-                                    if (ok) {
-                                        mostrarMensaje("Credencial correcta. Ingresando a GasGuard...", COLOR_OK);
-                                    } else {
-                                        mostrarMensaje("RUT o clave incorrecta, intente nuevamente", COLOR_ERROR);
-                                    }
-                                } catch (JSONException e) {
-                                    mostrarMensaje("RUT o clave incorrecta, intente nuevamente", COLOR_ERROR);
-                                }
+                                procesarRespuesta(respuesta);
                             }
                         });
                     }
@@ -90,7 +78,44 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // Muestra un mensaje de estado dentro de la tarjeta de acceso
+    // Realiza la consulta y reintenta una vez si falla la conexión
+    private String consultarServidor(String rut, String password) {
+        String respuesta = llamarLogin(rut, password);
+        if (respuesta.startsWith("ERROR")) {
+            respuesta = llamarLogin(rut, password);
+        }
+        return respuesta;
+    }
+
+    // Analiza la respuesta y muestra un mensaje para el usuario
+    private void procesarRespuesta(String respuesta) {
+        if (respuesta.startsWith("ERROR")) {
+            Log.e(TAG, respuesta);
+            mostrarMensaje("No fue posible iniciar sesión. Verifique su conexión a internet e intente nuevamente", COLOR_ERROR);
+            return;
+        }
+
+        int inicio = respuesta.indexOf('{');
+        if (inicio < 0) {
+            Log.e(TAG, "Respuesta sin formato JSON: " + respuesta);
+            mostrarMensaje("No fue posible iniciar sesión en este momento. Intente nuevamente", COLOR_ERROR);
+            return;
+        }
+
+        try {
+            JSONObject json = new JSONObject(respuesta.substring(inicio));
+            if (json.getBoolean("ok")) {
+                mostrarMensaje("Credencial correcta. Ingresando a GasGuard...", COLOR_OK);
+            } else {
+                mostrarMensaje("RUT o clave incorrecta, intente nuevamente", COLOR_ERROR);
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Respuesta con formato inválido: " + respuesta);
+            mostrarMensaje("No fue posible iniciar sesión en este momento. Intente nuevamente", COLOR_ERROR);
+        }
+    }
+
+    // Mensaje de estado dentro de la tarjeta de acceso
     private void mostrarMensaje(String texto, String color) {
         tvMensaje.setText(texto);
         tvMensaje.setTextColor(Color.parseColor(color));
@@ -99,12 +124,14 @@ public class MainActivity extends AppCompatActivity {
 
     // Envía RUT y contraseña a login.php y devuelve la respuesta del servidor
     private String llamarLogin(String rut, String password) {
+        HttpURLConnection con = null;
         try {
             URL url = new URL("http://" + IP_SERVIDOR + "/gasguard/login.php");
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
-            con.setConnectTimeout(5000);
-            con.setReadTimeout(5000);
+            con.setRequestProperty("Connection", "close");
+            con.setConnectTimeout(15000);
+            con.setReadTimeout(15000);
             con.setDoOutput(true);
 
             String datos = "rut=" + URLEncoder.encode(rut, "UTF-8")
@@ -123,6 +150,10 @@ public class MainActivity extends AppCompatActivity {
             return sb.toString();
         } catch (Exception e) {
             return "ERROR: " + e.getMessage();
+        } finally {
+            if (con != null) {
+                con.disconnect();
+            }
         }
     }
 }
