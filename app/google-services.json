@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "309371368037",
+    "project_id": "gasguard-44709",
+    "storage_bucket": "gasguard-44709.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:309371368037:android:f8875b6808b42ce3434c8c",
+        "android_client_info": {
+          "package_name": "com.company.product"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "309371368037-vu1fl2lk05uojp8kuej9jdokc7tutk44.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.company.product",
+            "certificate_hash": "dfe9820fb8189d671fd2f168070833d31e678ab7"
+          }
+        },
+        {
+          "client_id": "309371368037-60218edpcp6rvvaid8jh0mmhh3d6tdej.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLx0O_-PN6BQPwfiS9wU_Dnrl4J2Cao2k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "309371368037-60218edpcp6rvvaid8jh0mmhh3d6tdej.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
